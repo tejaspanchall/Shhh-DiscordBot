@@ -10,7 +10,6 @@ if (missing.length > 0) {
 
 module.exports = {
   token: process.env.TOKEN,
-  clientId: process.env.CLIENT_ID,
   guildId: process.env.GUILD_ID,
   targetChannelId: process.env.TARGET_CHANNEL_ID,
   inviteLink: process.env.INVITE_LINK,

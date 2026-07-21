@@ -14,8 +14,14 @@ const client = new Client({
   partials: [Partials.Channel],
 });
 
-client.once(Events.ClientReady, (c) => {
+client.once(Events.ClientReady, async (c) => {
   console.log(`[bot] Logged in as ${c.user.tag}. Watching channel ${config.targetChannelId}.`);
+  try {
+    await c.application.commands.set([announce.data.toJSON()], config.guildId || undefined);
+    console.log(`[bot] Registered /announce ${config.guildId ? `to guild ${config.guildId}` : 'globally'}.`);
+  } catch (err) {
+    console.error(`[bot] Failed to register /announce: ${err.stack || err.message}`);
+  }
 });
 
 client.on(Events.MessageCreate, async (message) => {

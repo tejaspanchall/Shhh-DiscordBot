@@ -7,11 +7,10 @@ Kicks any non-admin user who posts in a restricted channel. Deletes their messag
 ```bash
 npm install
 cp .env.example .env
-npm run deploy
 npm start
 ```
 
-`npm run deploy` registers the `/announce` slash command with Discord. Run it once, and again whenever the command changes.
+The bot auto-registers the `/announce` command on startup — no separate deploy step. Set `GUILD_ID` for instant registration in that one server; leave it blank to register globally (may take up to an hour to appear).
 
 Tip: enable **Developer Mode** in Discord (User Settings → Advanced) to copy channel IDs.
 
