@@ -2,6 +2,7 @@ const { Client, GatewayIntentBits, Partials, Events } = require('discord.js');
 const config = require('./config');
 const kickOnMessage = require('./modules/moderation/kickOnMessage');
 const announce = require('./commands/announce');
+const replyMessage = require('./commands/replyMessage');
 
 const client = new Client({
   intents: [
@@ -17,8 +18,11 @@ const client = new Client({
 client.once(Events.ClientReady, async (c) => {
   console.log(`[bot] Logged in as ${c.user.tag}. Watching channel ${config.targetChannelId}.`);
   try {
-    await c.application.commands.set([announce.data.toJSON()], config.guildId || undefined);
-    console.log(`[bot] Registered /announce ${config.guildId ? `to guild ${config.guildId}` : 'globally'}.`);
+    await c.application.commands.set(
+      [announce.data.toJSON(), replyMessage.data.toJSON()],
+      config.guildId || undefined,
+    );
+    console.log(`[bot] Registered commands ${config.guildId ? `to guild ${config.guildId}` : 'globally'}.`);
   } catch (err) {
     console.error(`[bot] Failed to register /announce: ${err.stack || err.message}`);
   }
@@ -33,11 +37,16 @@ client.on(Events.MessageCreate, async (message) => {
 });
 
 client.on(Events.InteractionCreate, async (interaction) => {
-  if (!interaction.isChatInputCommand() || interaction.commandName !== announce.data.name) return;
   try {
-    await announce.execute(interaction);
+    if (interaction.isChatInputCommand() && interaction.commandName === announce.data.name) {
+      await announce.execute(interaction);
+    } else if (interaction.isMessageContextMenuCommand() && interaction.commandName === replyMessage.data.name) {
+      await replyMessage.execute(interaction);
+    } else if (interaction.isModalSubmit() && interaction.customId.startsWith(`${replyMessage.customIdPrefix}:`)) {
+      await replyMessage.handleModal(interaction);
+    }
   } catch (err) {
-    console.error(`[bot] Error handling /${interaction.commandName}: ${err.stack || err.message}`);
+    console.error(`[bot] Error handling interaction: ${err.stack || err.message}`);
   }
 });
 

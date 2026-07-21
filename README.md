@@ -38,6 +38,8 @@ Use `/announce` to have the bot post a message to a channel:
 - `message` — the text to send (required).
 - `channel` — where to send it (optional; defaults to the current channel).
 
+To reply to a specific message, right-click it → **Apps → Reply**, type your text in the popup, and the bot posts a threaded reply to that message.
+
 Locked to you alone: set `OWNER_ID` to your own Discord user ID. Only that user can run the command — anyone else is rejected, and the command is hidden from non-admins. Set `GUILD_ID` to register it to a single server (instant); leave it blank to register globally (works everywhere, may take up to an hour to appear).
 
 ## How It Works
