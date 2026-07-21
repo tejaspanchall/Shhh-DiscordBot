@@ -1,6 +1,6 @@
 require('dotenv').config();
 
-const required = ['TOKEN', 'TARGET_CHANNEL_ID', 'INVITE_LINK'];
+const required = ['TOKEN', 'TARGET_CHANNEL_ID', 'INVITE_LINK', 'OWNER_ID'];
 const missing = required.filter((key) => !process.env[key]);
 
 if (missing.length > 0) {
@@ -10,7 +10,10 @@ if (missing.length > 0) {
 
 module.exports = {
   token: process.env.TOKEN,
+  clientId: process.env.CLIENT_ID,
+  guildId: process.env.GUILD_ID,
   targetChannelId: process.env.TARGET_CHANNEL_ID,
   inviteLink: process.env.INVITE_LINK,
+  ownerId: process.env.OWNER_ID,
   kickReason: 'Sent message in restricted channel',
 };

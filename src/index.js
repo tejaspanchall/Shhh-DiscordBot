@@ -1,6 +1,7 @@
 const { Client, GatewayIntentBits, Partials, Events } = require('discord.js');
 const config = require('./config');
 const kickOnMessage = require('./modules/moderation/kickOnMessage');
+const announce = require('./commands/announce');
 
 const client = new Client({
   intents: [
@@ -22,6 +23,15 @@ client.on(Events.MessageCreate, async (message) => {
     await kickOnMessage.handleMessage(message);
   } catch (err) {
     console.error(`[bot] Unhandled error in message handler: ${err.stack || err.message}`);
+  }
+});
+
+client.on(Events.InteractionCreate, async (interaction) => {
+  if (!interaction.isChatInputCommand() || interaction.commandName !== announce.data.name) return;
+  try {
+    await announce.execute(interaction);
+  } catch (err) {
+    console.error(`[bot] Error handling /${interaction.commandName}: ${err.stack || err.message}`);
   }
 });
 
