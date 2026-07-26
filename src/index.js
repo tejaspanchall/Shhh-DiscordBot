@@ -3,6 +3,7 @@ const config = require('./config');
 const kickOnMessage = require('./modules/moderation/kickOnMessage');
 const announce = require('./commands/announce');
 const replyMessage = require('./commands/replyMessage');
+const editMessage = require('./commands/editMessage');
 
 const client = new Client({
   intents: [
@@ -19,7 +20,7 @@ client.once(Events.ClientReady, async (c) => {
   console.log(`[bot] Logged in as ${c.user.tag}. Watching channel ${config.targetChannelId}.`);
   try {
     await c.application.commands.set(
-      [announce.data.toJSON(), replyMessage.data.toJSON()],
+      [announce.data.toJSON(), replyMessage.data.toJSON(), editMessage.data.toJSON()],
       config.guildId || undefined,
     );
     console.log(`[bot] Registered commands ${config.guildId ? `to guild ${config.guildId}` : 'globally'}.`);
@@ -38,12 +39,15 @@ client.on(Events.MessageCreate, async (message) => {
 
 client.on(Events.InteractionCreate, async (interaction) => {
   try {
-    if (interaction.isChatInputCommand() && interaction.commandName === announce.data.name) {
-      await announce.execute(interaction);
-    } else if (interaction.isMessageContextMenuCommand() && interaction.commandName === replyMessage.data.name) {
-      await replyMessage.execute(interaction);
-    } else if (interaction.isModalSubmit() && interaction.customId.startsWith(`${replyMessage.customIdPrefix}:`)) {
-      await replyMessage.handleModal(interaction);
+    if (interaction.isChatInputCommand()) {
+      if (interaction.commandName === announce.data.name) await announce.execute(interaction);
+    } else if (interaction.isMessageContextMenuCommand()) {
+      if (interaction.commandName === replyMessage.data.name) await replyMessage.execute(interaction);
+      else if (interaction.commandName === editMessage.data.name) await editMessage.execute(interaction);
+    } else if (interaction.isModalSubmit()) {
+      if (interaction.customId.startsWith(`${announce.customIdPrefix}:`)) await announce.handleModal(interaction);
+      else if (interaction.customId.startsWith(`${replyMessage.customIdPrefix}:`)) await replyMessage.handleModal(interaction);
+      else if (interaction.customId.startsWith(`${editMessage.customIdPrefix}:`)) await editMessage.handleModal(interaction);
     }
   } catch (err) {
     console.error(`[bot] Error handling interaction: ${err.stack || err.message}`);
