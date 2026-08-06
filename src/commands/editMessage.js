@@ -8,6 +8,7 @@ const {
   MessageFlags,
 } = require('discord.js');
 const config = require('../config');
+const { resolveMentions } = require('../lib/mentions');
 
 const customIdPrefix = 'edit';
 
@@ -64,7 +65,7 @@ async function handleModal(interaction) {
   try {
     const channel = await interaction.client.channels.fetch(channelId);
     const target = await channel.messages.fetch(messageId);
-    await target.edit(text);
+    await target.edit(await resolveMentions(text, channel.guild));
     return interaction.reply({
       content: 'Message edited.',
       flags: MessageFlags.Ephemeral,

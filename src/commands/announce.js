@@ -8,6 +8,7 @@ const {
   MessageFlags,
 } = require('discord.js');
 const config = require('../config');
+const { resolveMentions } = require('../lib/mentions');
 
 const customIdPrefix = 'announce';
 
@@ -31,7 +32,7 @@ const data = new SlashCommandBuilder()
 
 async function send(interaction, channel, text) {
   try {
-    await channel.send(text);
+    await channel.send(await resolveMentions(text, channel.guild));
     return interaction.reply({
       content: `Announcement sent to ${channel}.`,
       flags: MessageFlags.Ephemeral,

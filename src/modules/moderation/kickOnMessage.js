@@ -9,9 +9,7 @@ function isExempt(member) {
 async function deleteMessage(message) {
   try {
     if (message.deletable) await message.delete();
-  } catch (err) {
-    console.warn(`[moderation] Failed to delete message ${message.id}: ${err.message}`);
-  }
+  } catch {}
 }
 
 const GOODBYE_MESSAGES = [
@@ -26,23 +24,16 @@ function buildGoodbyeMessage() {
 async function notifyUser(user) {
   try {
     await user.send(buildGoodbyeMessage());
-  } catch (err) {
-    console.log(`[moderation] Could not DM ${user.tag}: ${err.message}`);
-  }
+  } catch {}
 }
 
 async function kickMember(member) {
-  if (!member.kickable) {
-    console.warn(`[moderation] Cannot kick ${member.user.tag} — insufficient permissions or role hierarchy.`);
-    return false;
-  }
+  if (!member.kickable) return false;
 
   try {
     await member.kick(config.kickReason);
-    console.log(`[moderation] Kicked ${member.user.tag} (${member.id}).`);
     return true;
-  } catch (err) {
-    console.error(`[moderation] Failed to kick ${member.user.tag}: ${err.message}`);
+  } catch {
     return false;
   }
 }

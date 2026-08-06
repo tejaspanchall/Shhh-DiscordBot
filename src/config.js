@@ -4,7 +4,6 @@ const required = ['TOKEN', 'TARGET_CHANNEL_ID', 'INVITE_LINK', 'OWNER_ID'];
 const missing = required.filter((key) => !process.env[key]);
 
 if (missing.length > 0) {
-  console.error(`[config] Missing required environment variables: ${missing.join(', ')}`);
   process.exit(1);
 }
 

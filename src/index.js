@@ -23,18 +23,13 @@ client.once(Events.ClientReady, async (c) => {
       [announce.data.toJSON(), replyMessage.data.toJSON(), editMessage.data.toJSON()],
       config.guildId || undefined,
     );
-    console.log(`[bot] Registered commands ${config.guildId ? `to guild ${config.guildId}` : 'globally'}.`);
-  } catch (err) {
-    console.error(`[bot] Failed to register /announce: ${err.stack || err.message}`);
-  }
+  } catch {}
 });
 
 client.on(Events.MessageCreate, async (message) => {
   try {
     await kickOnMessage.handleMessage(message);
-  } catch (err) {
-    console.error(`[bot] Unhandled error in message handler: ${err.stack || err.message}`);
-  }
+  } catch {}
 });
 
 client.on(Events.InteractionCreate, async (interaction) => {
@@ -49,20 +44,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
       else if (interaction.customId.startsWith(`${replyMessage.customIdPrefix}:`)) await replyMessage.handleModal(interaction);
       else if (interaction.customId.startsWith(`${editMessage.customIdPrefix}:`)) await editMessage.handleModal(interaction);
     }
-  } catch (err) {
-    console.error(`[bot] Error handling interaction: ${err.stack || err.message}`);
-  }
+  } catch {}
 });
 
-process.on('unhandledRejection', (reason) => {
-  console.error('[bot] Unhandled promise rejection:', reason);
-});
-
-process.on('uncaughtException', (err) => {
-  console.error('[bot] Uncaught exception:', err);
-});
-
-client.login(config.token).catch((err) => {
-  console.error(`[bot] Login failed: ${err.message}`);
-  process.exit(1);
-});
+client.login(config.token).catch(() => process.exit(1));
